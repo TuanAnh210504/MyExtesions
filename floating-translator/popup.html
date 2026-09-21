@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating AI Translator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="popup-styles.css">
+</head>
+<body>
+    <div id="popup-container">
+
+        <!-- Header -->
+        <div id="popup-header">
+            <div id="header-left">
+                <div id="app-logo">🌐</div>
+                <div>
+                    <h1 id="app-name">Dịch Thuật AI</h1>
+                    <p  id="app-sub">Floating Translator v1.1</p>
+                </div>
+            </div>
+            <button id="toggle-widget-btn" title="Bật/tắt widget trên trang web này">
+                <span id="toggle-icon">⊞</span>
+                <span id="toggle-label">Widget</span>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div id="popup-body">
+
+            <!-- Language row with swap -->
+            <div id="lang-row">
+                <div id="src-wrap">
+                    <label id="src-label-text">Tự động nhận diện</label>
+                </div>
+                <button id="swap-btn" title="Hoán đổi chiều dịch">⇄</button>
+                <select id="target-lang" aria-label="Ngôn ngữ đích">
+                    <option value="vi">🇻🇳 Tiếng Việt</option>
+                    <option value="en">🇺🇸 English</option>
+                    <option value="zh-CN">🇨🇳 中文 (简体)</option>
+                    <option value="zh-TW">🇹🇼 中文 (繁體)</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="ko">🇰🇷 한국어</option>
+                    <option value="th">🇹🇭 ภาษาไทย</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="pt">🇵🇹 Português</option>
+                    <option value="ru">🇷🇺 Русский</option>
+                </select>
+            </div>
+
+            <!-- Detected lang badge -->
+            <div id="detected-badge" style="display:none"></div>
+
+            <!-- Input -->
+            <div id="input-wrap">
+                <textarea
+                    id="input-text"
+                    placeholder="Nhập văn bản cần dịch... (Ctrl+Enter để dịch)"
+                    maxlength="5000"
+                    rows="4"
+                    aria-label="Văn bản cần dịch"
+                ></textarea>
+                <span id="char-count">0 / 5000</span>
+            </div>
+
+            <!-- Actions -->
+            <div id="action-row">
+                <button id="translate-btn" aria-label="Dịch">📝 Dịch</button>
+                <button id="speak-input-btn" title="Phát âm văn bản gốc" aria-label="Phát âm">🔊</button>
+                <button id="clear-btn" title="Xóa nội dung" aria-label="Xóa">🗑</button>
+            </div>
+
+            <!-- Result -->
+            <div id="result-area" aria-live="polite" aria-label="Kết quả dịch">
+                <span class="placeholder-text">Kết quả dịch sẽ hiển thị ở đây...</span>
+            </div>
+
+            <!-- Result actions -->
+            <div id="result-row">
+                <button id="copy-btn"         disabled aria-label="Sao chép">📋 Sao chép</button>
+                <button id="speak-result-btn" disabled aria-label="Phát âm kết quả">🔊 Phát âm</button>
+            </div>
+
+            <!-- Footer: shortcut hint -->
+            <div id="popup-footer">
+                <span>⌨ Ctrl+Shift+T: Toggle widget trên trang</span>
+                <span>•</span>
+                <span>Chuột phải vào text để dịch nhanh</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
