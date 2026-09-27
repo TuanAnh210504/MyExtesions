@@ -120,15 +120,15 @@ public class TranslationService
         }
         catch (HttpRequestException ex)
         {
-            throw new Exception($"Network error during translation: {ex.Message}", ex);
+            throw new Exception($"Lỗi mạng khi dịch: {ex.Message}", ex);
         }
         catch (TaskCanceledException)
         {
-            throw new TimeoutException("Translation request timed out.");
+            throw new TimeoutException("Yêu cầu dịch đã hết thời gian chờ.");
         }
         catch (Exception ex)
         {
-            throw new Exception($"Failed to parse translation: {ex.Message}", ex);
+            throw new Exception($"Không thể phân tích kết quả dịch: {ex.Message}", ex);
         }
     }
 }

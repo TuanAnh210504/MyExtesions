@@ -1,0 +1,8 @@
+# ── Secrets & Environment Variables ──────────────────────────
+# KHÔNG bao giờ commit các file chứa secret thực tế!
+.env
+.env.local
+.env.*.local
+
+# ── Chỉ commit file template ──────────────────────────────────
+# .env.example  <- được commit để làm tài liệu

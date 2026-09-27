@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     inputEl.focus();
     updateResultActions(false);
-    console.log('[Popup] Floating AI Translator popup ready');
+    console.log('[Popup] Floating AI Translator đã sẵn sàng');
 });
 
 // ═════════════════════════════════════════════════════════════
@@ -111,7 +111,7 @@ async function performTranslation() {
             setResultState('error', '⚠ Không thể dịch. Vui lòng thử lại.');
         }
     } catch (err) {
-        console.error('[Popup] Translation error:', err);
+        console.error('[Popup] Lỗi dịch thuật:', err);
         setResultState('error', '⚠ Lỗi kết nối! Kiểm tra internet.');
     } finally {
         translateBtn.classList.remove('loading');

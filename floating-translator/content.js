@@ -731,14 +731,14 @@ function showWidget() {
     if (!widgetEl) return;
     widgetEl.classList.add('ft-visible');    // CSS: display:flex !important
     isVisible = true;
-    console.log('[FT] Widget shown');
+    console.log('[FT] Widget đã hiện');
 }
 
 function hideWidget() {
     if (!widgetEl || isPinned) return;
     widgetEl.classList.remove('ft-visible');
     isVisible = false;
-    console.log('[FT] Widget hidden');
+    console.log('[FT] Widget đã ẩn');
 }
 
 function toggleWidget() {
@@ -912,10 +912,10 @@ function setupMessageListener() {
                     break;
 
                 default:
-                    sendResponse({ success: false, error: 'Unknown action' });
+                    sendResponse({ success: false, error: 'Hành động không hợp lệ' });
             }
         } catch (err) {
-            console.error('[Floating Translator] Message error:', err);
+            console.error('[Floating Translator] Lỗi xử lý tin nhắn:', err);
             sendResponse({ success: false, error: err.message });
         }
         return true; // giữ message channel mở cho async

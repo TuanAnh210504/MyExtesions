@@ -1,7 +1,7 @@
 // Background Service Worker — Floating AI Translator v1.1
 
 chrome.runtime.onInstalled.addListener(() => {
-    console.log('✅ Floating AI Translator v1.1 installed');
+    console.log('✅ Floating AI Translator v1.1 đã được cài đặt');
 
     // Tạo context menu khi chuột phải vào text đã chọn
     chrome.contextMenus.create({

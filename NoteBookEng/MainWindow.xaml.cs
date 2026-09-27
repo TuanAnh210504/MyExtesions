@@ -36,14 +36,14 @@ public partial class MainWindow : Window
         
         this.StateChanged += Window_StateChanged;
 
-        // Configure 250ms search debounce timer
+        // Cấu hình bộ đếm debounce tìm kiếm 250ms
         _debounceTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(250)
         };
         _debounceTimer.Tick += DebounceTimer_Tick;
 
-        // Configure transient status toast timer
+        // Cấu hình bộ đếm thông báo trạng thái tạm thời
         _toastTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(2.5)
@@ -51,7 +51,7 @@ public partial class MainWindow : Window
         _toastTimer.Tick += (s, e) =>
         {
             _toastTimer.Stop();
-            TxtFooterStatus.Text = "Ready";
+            TxtFooterStatus.Text = "Sẵn sàng";
             TxtFooterStatus.Foreground = (Brush)FindResource("TextSecondaryBrush");
         };
 
@@ -71,16 +71,16 @@ public partial class MainWindow : Window
     {
         try
         {
-            TxtFooterStatus.Text = "Initializing database...";
+            TxtFooterStatus.Text = "Đang khởi tạo cơ sở dữ liệu...";
             await _databaseService.InitializeDatabaseAsync();
-            TxtFooterStatus.Text = "Ready";
+            TxtFooterStatus.Text = "Sẵn sàng";
             await RefreshRecentWordsAsync();
             TxtWord.Focus();
         }
         catch (Exception ex)
         {
-            TxtFooterStatus.Text = "Database initialization error";
-            MessageBox.Show($"Failed to initialize database: {ex.Message}", "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            TxtFooterStatus.Text = "Lỗi khởi tạo cơ sở dữ liệu";
+            MessageBox.Show($"Không thể khởi tạo cơ sở dữ liệu: {ex.Message}", "Lỗi cơ sở dữ liệu", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -105,13 +105,13 @@ public partial class MainWindow : Window
         if (Topmost)
         {
             PathPin.Fill = (Brush)FindResource("AccentHoverBrush");
-            BtnPin.ToolTip = "Always On Top: ON";
+            BtnPin.ToolTip = "Luôn hiển thị trên cùng: BẬT";
             BtnPin.Opacity = 1.0;
         }
         else
         {
             PathPin.Fill = (Brush)FindResource("TextSecondaryBrush");
-            BtnPin.ToolTip = "Always On Top: OFF";
+            BtnPin.ToolTip = "Luôn hiển thị trên cùng: TẮT";
             BtnPin.Opacity = 0.65;
         }
     }
@@ -165,7 +165,7 @@ public partial class MainWindow : Window
         if (string.IsNullOrWhiteSpace(text))
         {
             PillStatus.Visibility = Visibility.Collapsed;
-            TxtListHeader.Text = "Recent Words";
+            TxtListHeader.Text = "Từ gần đây";
             _ = RefreshRecentWordsAsync();
         }
         else
@@ -202,14 +202,14 @@ public partial class MainWindow : Window
             PillStatus.Visibility = Visibility.Visible;
             if (exactMatch != null)
             {
-                TxtStatusBadge.Text = "✓ In database";
+                TxtStatusBadge.Text = "✓ Có trong sổ tay";
                 TxtStatusBadge.Foreground = (Brush)FindResource("SuccessBrush");
                 PillStatus.Background = new SolidColorBrush(Color.FromArgb(40, 16, 185, 129));
                 PillStatus.BorderBrush = new SolidColorBrush(Color.FromArgb(120, 16, 185, 129));
 
-                TxtListHeader.Text = $"Found {results.Count} matches";
+                TxtListHeader.Text = $"Tìm thấy {results.Count} kết quả";
 
-                // If meaning is empty, auto-preview the exact meaning
+                // Nếu nghĩa trống, tự điền nghĩa của từ khớp chính xác
                 if (string.IsNullOrWhiteSpace(TxtMeaning.Text))
                 {
                     TxtMeaning.Text = exactMatch.Meaning;
@@ -217,17 +217,17 @@ public partial class MainWindow : Window
             }
             else
             {
-                TxtStatusBadge.Text = "● Not found";
+                TxtStatusBadge.Text = "● Chưa có trong sổ tay";
                 TxtStatusBadge.Foreground = (Brush)FindResource("WarningBrush");
                 PillStatus.Background = new SolidColorBrush(Color.FromArgb(40, 245, 158, 11));
                 PillStatus.BorderBrush = new SolidColorBrush(Color.FromArgb(120, 245, 158, 11));
 
-                TxtListHeader.Text = hasResults ? $"Related ({results.Count})" : "No matches";
+                TxtListHeader.Text = hasResults ? $"Liên quan ({results.Count})" : "Không tìm thấy";
             }
         }
         catch (Exception ex)
         {
-            ShowStatusMessage($"Search error: {ex.Message}", isError: true);
+            ShowStatusMessage($"Lỗi tìm kiếm: {ex.Message}", isError: true);
         }
     }
 
@@ -284,14 +284,14 @@ public partial class MainWindow : Window
 
         if (string.IsNullOrWhiteSpace(word))
         {
-            ShowStatusMessage("Please enter a word first.", isWarning: true);
+            ShowStatusMessage("Vui lòng nhập từ trước.", isWarning: true);
             TxtWord.Focus();
             return;
         }
 
         if (string.IsNullOrWhiteSpace(meaning))
         {
-            ShowStatusMessage("Please enter a meaning or click Translate.", isWarning: true);
+            ShowStatusMessage("Vui lòng nhập nghĩa hoặc nhấn Dịch.", isWarning: true);
             TxtMeaning.Focus();
             return;
         }
@@ -299,9 +299,9 @@ public partial class MainWindow : Window
         try
         {
             var item = await _databaseService.AddOrUpdateWordAsync(word, meaning);
-            ShowStatusMessage($"Saved: \"{item.Word}\"", isSuccess: true);
+            ShowStatusMessage($"Đã lưu: \"{item.Word}\"", isSuccess: true);
 
-            // Clear inputs and reset focus to Word input for rapid typing flow
+            // Xóa input và đặt focus lại vào ô Từ để nhập nhanh tiếp
             TxtWord.Clear();
             TxtMeaning.Clear();
             PillStatus.Visibility = Visibility.Collapsed;
@@ -311,7 +311,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowStatusMessage($"Failed to save: {ex.Message}", isError: true);
+            ShowStatusMessage($"Lưu thất bại: {ex.Message}", isError: true);
         }
     }
 
@@ -324,7 +324,7 @@ public partial class MainWindow : Window
         string word = TxtWord.Text.Trim();
         if (string.IsNullOrWhiteSpace(word))
         {
-            ShowStatusMessage("Enter an English word to translate.", isWarning: true);
+            ShowStatusMessage("Nhập một từ tiếng Anh để dịch.", isWarning: true);
             TxtWord.Focus();
             return;
         }
@@ -337,7 +337,7 @@ public partial class MainWindow : Window
             _isTranslating = true;
             BtnTranslate.IsEnabled = false;
             TxtTranslateBtn.Text = "...";
-            TxtFooterStatus.Text = $"Translating '{word}'...";
+            TxtFooterStatus.Text = $"Đang dịch '{word}'...";
 
             string translation = await _translationService.TranslateEnToViAsync(word);
 
@@ -346,22 +346,22 @@ public partial class MainWindow : Window
                 TxtMeaning.Text = translation;
                 TxtMeaning.Focus();
                 TxtMeaning.CaretIndex = TxtMeaning.Text.Length;
-                ShowStatusMessage("Translation loaded! Press Enter to save.", isSuccess: true);
+                ShowStatusMessage("Đã tải bản dịch! Nhấn Enter để lưu.", isSuccess: true);
             }
             else
             {
-                ShowStatusMessage("No translation found.", isWarning: true);
+                ShowStatusMessage("Không tìm thấy bản dịch.", isWarning: true);
             }
         }
         catch (Exception ex)
         {
-            ShowStatusMessage($"Translation failed: {ex.Message}", isError: true);
+            ShowStatusMessage($"Dịch thất bại: {ex.Message}", isError: true);
         }
         finally
         {
             _isTranslating = false;
             BtnTranslate.IsEnabled = true;
-            TxtTranslateBtn.Text = "Translate";
+            TxtTranslateBtn.Text = "Dịch";
         }
     }
 
@@ -379,7 +379,7 @@ public partial class MainWindow : Window
                 TxtWord.Text = selected.Word;
                 TxtMeaning.Text = selected.Meaning;
                 PillStatus.Visibility = Visibility.Visible;
-                TxtStatusBadge.Text = "✓ In database";
+                TxtStatusBadge.Text = "✓ Có trong sổ tay";
                 TxtStatusBadge.Foreground = (Brush)FindResource("SuccessBrush");
                 PillStatus.Background = new SolidColorBrush(Color.FromArgb(40, 16, 185, 129));
                 PillStatus.BorderBrush = new SolidColorBrush(Color.FromArgb(120, 16, 185, 129));
@@ -420,7 +420,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                ShowStatusMessage($"Delete error: {ex.Message}", isError: true);
+                ShowStatusMessage($"Lỗi xoá từ: {ex.Message}", isError: true);
             }
         }
     }
@@ -432,7 +432,7 @@ public partial class MainWindow : Window
             var recents = await _databaseService.GetRecentWordsAsync(15);
             ListResults.ItemsSource = recents;
             PanelEmptyState.Visibility = recents.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-            TxtWordCount.Text = $"{recents.Count} words";
+            TxtWordCount.Text = $"{recents.Count} từ";
         }
         catch
         {
