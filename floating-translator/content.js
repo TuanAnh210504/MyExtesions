@@ -666,41 +666,37 @@ async function performTranslation() {
     if (speakResultBtn) speakResultBtn.disabled = true;
 
     try {
-        // Phải dùng template string — URLSearchParams không encode array param đúng
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(tl)}&dt=t&dt=ld&q=${encodeURIComponent(text)}`;
+        const query = encodeURIComponent(text);
+        // MyMemory API: miễn phí, không bị chặn, hỗ trợ auto-detect nguồn
+        const url = `https://api.mymemory.translated.net/get?q=${query}&langpair=auto|${encodeURIComponent(tl)}`;
         const res  = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        // Ghép tất cả phần dịch lại
-        const translated = (data[0] || [])
-            .filter(Boolean)
-            .map(part => part[0] || '')
-            .join('');
+        if (data.responseStatus !== 200) {
+            throw new Error(`MyMemory lỗi ${data.responseStatus}: ${data.responseDetails || ''}`);
+        }
+
+        const translated = data.responseData?.translatedText?.trim();
 
         if (translated) {
             setResult('success', translated);
             if (copyBtn) copyBtn.disabled = false;
             if (speakResultBtn) speakResultBtn.disabled = false;
 
-            // Hiện ngôn ngữ đã nhận diện
-            const detectedCode = data[2] || '';
-            if (detectedCode && detectedBadge && srcLabel) {
-                const detectedLang = LANGUAGES.find(l => l.code === detectedCode);
-                const targetLang   = LANGUAGES.find(l => l.code === tl);
-                const srcName  = detectedLang ? detectedLang.name : detectedCode.toUpperCase();
-                const tgtName  = targetLang   ? targetLang.name   : tl.toUpperCase();
-                srcLabel.textContent = detectedLang
-                    ? detectedLang.name.replace(/^[\S]+\s/, '')  // bỏ emoji
-                    : detectedCode;
-                detectedBadge.textContent = `🔍 Phát hiện: ${srcName} → ${tgtName}`;
+            // MyMemory không trả detected lang, hiển thị ngôn ngữ đích
+            const targetLang = LANGUAGES.find(l => l.code === tl);
+            if (detectedBadge && srcLabel) {
+                srcLabel.textContent = 'Tự động';
+                const tgtName = targetLang ? targetLang.name : tl.toUpperCase();
+                detectedBadge.textContent = `→ ${tgtName}`;
                 detectedBadge.style.display = 'block';
             }
         } else {
             setResult('error', '⚠ Không thể dịch. Vui lòng thử lại.');
         }
     } catch (err) {
-        console.error('[Floating Translator]', err);
+        console.error('[Floating Translator] Lỗi dịch:', err);
         setResult('error', '⚠ Lỗi kết nối! Kiểm tra internet.');
     } finally {
         if (translateBtn) translateBtn.classList.remove('loading');

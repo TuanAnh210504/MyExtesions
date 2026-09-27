@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,15 +19,15 @@ public class TranslationService
         _httpClient = new HttpClient(handler)
         {
             Timeout = TimeSpan.FromSeconds(10),
-            DefaultRequestVersion = System.Net.HttpVersion.Version11
         };
-        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "curl/8.21.0");
-        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "*/*");
+        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
+            "User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        );
     }
 
     /// <summary>
-    /// Translates English text to Vietnamese using the Google Translate endpoint, 
-    /// pulling in pronunciation and dictionary meanings if available.
+    /// Dịch văn bản tiếng Anh sang tiếng Việt qua MyMemory API (miễn phí, không cần key).
     /// </summary>
     public async Task<string> TranslateEnToViAsync(string text, CancellationToken cancellationToken = default)
     {
@@ -36,8 +35,7 @@ public class TranslationService
             return string.Empty;
 
         string query = Uri.EscapeDataString(text.Trim());
-        // Added dt=bd (dictionary) and dt=rm (romanization/pronunciation)
-        string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&dt=bd&dt=rm&q={query}";
+        string url = $"https://api.mymemory.translated.net/get?q={query}&langpair=en|vi";
 
         try
         {
@@ -47,76 +45,26 @@ public class TranslationService
             string json = await response.Content.ReadAsStringAsync(cancellationToken);
             using var doc = JsonDocument.Parse(json);
 
-            var sb = new StringBuilder();
-            string primaryTranslation = "";
-            string pronunciation = "";
+            var root = doc.RootElement;
 
-            if (doc.RootElement.ValueKind == JsonValueKind.Array && doc.RootElement.GetArrayLength() > 0)
+            int status = root.TryGetProperty("responseStatus", out var statusProp)
+                ? statusProp.GetInt32()
+                : 0;
+
+            if (status != 200)
             {
-                // Parse standard translations & pronunciation
-                var sentences = doc.RootElement[0];
-                if (sentences.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (var sentence in sentences.EnumerateArray())
-                    {
-                        if (sentence.ValueKind == JsonValueKind.Array)
-                        {
-                            if (sentence.GetArrayLength() > 0 && sentence[0].ValueKind == JsonValueKind.String)
-                            {
-                                primaryTranslation += sentence[0].GetString();
-                            }
-                            
-                            // Pronunciation is often found as the 4th element (index 3) when the first element is null
-                            if (sentence.GetArrayLength() > 3 && 
-                                sentence[0].ValueKind == JsonValueKind.Null && 
-                                sentence[3].ValueKind == JsonValueKind.String)
-                            {
-                                pronunciation = sentence[3].GetString() ?? "";
-                            }
-                        }
-                    }
-                }
-
-                sb.Append(primaryTranslation.Trim());
-
-                if (!string.IsNullOrWhiteSpace(pronunciation))
-                {
-                    sb.AppendLine();
-                    sb.Append($"/{pronunciation}/");
-                }
-
-                // Parse dictionary definitions if available (Multiple meanings)
-                if (doc.RootElement.GetArrayLength() > 1 && doc.RootElement[1].ValueKind == JsonValueKind.Array)
-                {
-                    var dictEntries = doc.RootElement[1];
-                    sb.AppendLine();
-                    
-                    foreach (var entry in dictEntries.EnumerateArray())
-                    {
-                        if (entry.ValueKind == JsonValueKind.Array && entry.GetArrayLength() >= 2)
-                        {
-                            var pos = entry[0].GetString() ?? ""; // Part of speech (e.g. noun, verb)
-                            var terms = entry[1];
-
-                            if (terms.ValueKind == JsonValueKind.Array && terms.GetArrayLength() > 0)
-                            {
-                                sb.AppendLine();
-                                sb.Append($"[{pos}]: ");
-                                
-                                bool first = true;
-                                foreach (var term in terms.EnumerateArray())
-                                {
-                                    if (!first) sb.Append(", ");
-                                    sb.Append(term.GetString());
-                                    first = false;
-                                }
-                            }
-                        }
-                    }
-                }
+                string details = root.TryGetProperty("responseDetails", out var d) ? d.GetString() ?? "" : "";
+                throw new Exception($"MyMemory trả về lỗi {status}: {details}");
             }
 
-            return sb.ToString().Trim();
+            string translated = "";
+            if (root.TryGetProperty("responseData", out var data) &&
+                data.TryGetProperty("translatedText", out var translatedEl))
+            {
+                translated = translatedEl.GetString() ?? "";
+            }
+
+            return translated.Trim();
         }
         catch (HttpRequestException ex)
         {
@@ -126,7 +74,7 @@ public class TranslationService
         {
             throw new TimeoutException("Yêu cầu dịch đã hết thời gian chờ.");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not TimeoutException)
         {
             throw new Exception($"Không thể phân tích kết quả dịch: {ex.Message}", ex);
         }

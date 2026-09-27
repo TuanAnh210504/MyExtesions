@@ -81,32 +81,28 @@ async function performTranslation() {
     updateResultActions(false);
 
     try {
-        // Phải dùng template string — URLSearchParams không encode array param đúng
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(tl)}&dt=t&dt=ld&q=${encodeURIComponent(text)}`;
+        const query = encodeURIComponent(text);
+        // MyMemory API: miễn phí, không bị chặn, hỗ trợ auto-detect nguồn
+        const url = `https://api.mymemory.translated.net/get?q=${query}&langpair=auto|${encodeURIComponent(tl)}`;
         const res  = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        const translated = (data[0] || [])
-            .filter(Boolean)
-            .map(p => p[0] || '')
-            .join('');
+        if (data.responseStatus !== 200) {
+            throw new Error(`MyMemory lỗi ${data.responseStatus}`);
+        }
+
+        const translated = data.responseData?.translatedText?.trim();
 
         if (translated) {
             setResultState('success', translated);
             updateResultActions(true);
 
-            // Hiện detected language
-            const detectedCode = data[2] || '';
-            if (detectedCode) {
-                const srcLang = LANGUAGES.find(l => l.code === detectedCode);
-                const tgtLang = LANGUAGES.find(l => l.code === tl);
-                srcLabelText.textContent = srcLang
-                    ? srcLang.name.replace(/^[\S]+\s/, '')   // bỏ emoji
-                    : detectedCode.toUpperCase();
-                detectedBadge.textContent = `🔍 ${srcLang?.name || detectedCode} → ${tgtLang?.name || tl}`;
-                detectedBadge.style.display = 'block';
-            }
+            // MyMemory không trả detected lang, hiển thị ngôn ngữ đích
+            const tgtLang = LANGUAGES.find(l => l.code === tl);
+            srcLabelText.textContent = 'Tự động';
+            detectedBadge.textContent = `→ ${tgtLang?.name || tl}`;
+            detectedBadge.style.display = 'block';
         } else {
             setResultState('error', '⚠ Không thể dịch. Vui lòng thử lại.');
         }
