@@ -74,7 +74,7 @@
                         <!-- Pin / Topmost Toggle Button -->
                         <Button x:Name="BtnPin" 
                                 Style="{StaticResource WindowActionButton}" 
-                                ToolTip="Toggle Always On Top"
+                                ToolTip="Bật/tắt Luôn trên cùng"
                                 Click="BtnPin_Click"
                                 Margin="0,0,3,0">
                             <Viewbox Width="13" Height="13">
@@ -86,7 +86,7 @@
 
                         <!-- Minimize Button -->
                         <Button Style="{StaticResource WindowActionButton}" 
-                                ToolTip="Minimize"
+                                ToolTip="Thu nhỏ"
                                 Click="BtnMinimize_Click"
                                 Margin="0,0,3,0">
                             <Viewbox Width="11" Height="11">
@@ -96,7 +96,7 @@
 
                         <!-- Close Button -->
                         <Button Style="{StaticResource WindowCloseButton}" 
-                                ToolTip="Close"
+                                ToolTip="Đóng"
                                 Click="BtnClose_Click">
                             <Viewbox Width="10" Height="10">
                                 <Path Data="M13.41,12L19,17.59L17.59,19L12,13.41L6.41,19L5,17.59L10.59,12L5,6.41L6.41,5L12,10.59L17.59,5L19,6.41L13.41,12Z" 
@@ -156,7 +156,7 @@
                             <!-- Placeholder -->
                             <TextBlock x:Name="TxtWordPlaceholder" 
                                        Grid.Column="1" 
-                                       Text="Type an English word..." 
+                                       Text="Nhập từ tiếng Anh..." 
                                        Foreground="#64748B" 
                                        FontSize="13" 
                                        VerticalAlignment="Center" 
@@ -201,7 +201,7 @@
                     <!-- Section Header or count -->
                     <TextBlock x:Name="TxtListHeader" 
                                Grid.Column="1" 
-                               Text="Recent Words" 
+                               Text="Từ gần đây" 
                                FontSize="11" 
                                Foreground="{StaticResource TextSecondaryBrush}" 
                                VerticalAlignment="Center" />
@@ -239,7 +239,7 @@
 
                             <!-- Meaning Placeholder -->
                             <TextBlock x:Name="TxtMeaningPlaceholder" 
-                                       Text="Vietnamese meaning (Press Enter to save)..." 
+                                       Text="Nghĩa tiếng Việt (Nhấn Enter để lưu)..." 
                                        Foreground="#64748B" 
                                        FontSize="12" 
                                        Margin="2,1,0,0"
@@ -258,20 +258,20 @@
                             <Button x:Name="BtnTranslate" 
                                     Grid.Column="0" 
                                     Style="{StaticResource SecondaryButton}" 
-                                    ToolTip="Auto-translate word with Google Translate"
+                                    ToolTip="Tự động dịch với MyMemory"
                                     Click="BtnTranslate_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <Viewbox Width="12" Height="12" Margin="0,0,5,0">
                                         <Path Data="M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z" 
                                               Fill="{StaticResource AccentHoverBrush}" />
                                     </Viewbox>
-                                    <TextBlock x:Name="TxtTranslateBtn" Text="Translate" FontSize="11" />
+                                    <TextBlock x:Name="TxtTranslateBtn" Text="Dịch" FontSize="11" />
                                 </StackPanel>
                             </Button>
 
                             <!-- Hint text -->
                             <TextBlock Grid.Column="1" 
-                                       Text="↵ Enter to Save" 
+                                       Text="↵ Enter để Lưu" 
                                        FontSize="10" 
                                        Foreground="#64748B" 
                                        VerticalAlignment="Center" 
@@ -283,9 +283,9 @@
                                     Grid.Column="2" 
                                     Style="{StaticResource PrimaryButton}" 
                                     Click="BtnSave_Click"
-                                    ToolTip="Save Word (Enter)">
+                                    ToolTip="Lưu từ (Enter)">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Save" FontSize="11" />
+                                    <TextBlock Text="Lưu" FontSize="11" />
                                 </StackPanel>
                             </Button>
                         </Grid>
@@ -362,7 +362,7 @@
                                         <Button Grid.Column="1" 
                                                 Style="{StaticResource WindowActionButton}" 
                                                 Width="22" Height="22" 
-                                                ToolTip="Delete Word" 
+                                                ToolTip="Xoá từ" 
                                                 Tag="{Binding Id}"
                                                 Click="BtnDeleteItem_Click"
                                                 VerticalAlignment="Center">
@@ -379,11 +379,11 @@
                                     HorizontalAlignment="Center" 
                                     Visibility="Collapsed">
                             <TextBlock Text="📖" FontSize="24" HorizontalAlignment="Center" Margin="0,0,0,4" />
-                            <TextBlock Text="No words in notebook yet." 
+                            <TextBlock Text="Sổ tay chưa có từ nào." 
                                        FontSize="12" 
                                        Foreground="#64748B" 
                                        HorizontalAlignment="Center" />
-                            <TextBlock Text="Type above to search or add new words!" 
+                            <TextBlock Text="Nhập phía trên để tìm hoặc thêm từ mới!" 
                                        FontSize="10" 
                                        Foreground="#475569" 
                                        HorizontalAlignment="Center" 
@@ -407,14 +407,14 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock x:Name="TxtFooterStatus" 
-                               Text="Ready" 
+                               Text="Sẵn sàng" 
                                FontSize="10" 
                                Foreground="{StaticResource TextSecondaryBrush}" 
                                VerticalAlignment="Center" />
 
                     <TextBlock x:Name="TxtWordCount" 
                                Grid.Column="1" 
-                               Text="0 words" 
+                               Text="0 từ" 
                                FontSize="10" 
                                Foreground="#64748B" 
                                VerticalAlignment="Center" />
